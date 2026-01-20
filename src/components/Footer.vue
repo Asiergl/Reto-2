@@ -15,7 +15,7 @@
 
       <div>
         <h3 class="text-lg font-bold mb-4 uppercase tracking-wider">Enlaces</h3>
-        <ul class="space-y-2 text-sm">
+        <ul class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
           <li>
             <router-link to="/" class="hover:text-pink-300 transition-colors duration-300">
               Inicio
