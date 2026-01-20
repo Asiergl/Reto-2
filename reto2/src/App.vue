@@ -1,37 +1,31 @@
 <script setup>
-
+import { RouterView } from 'vue-router'; // Importante para ver las páginas
 import Cabecera from './components/Cabecera.vue';
 import Footer from './components/Footer.vue';
 </script>
 
 <template>
-  <header>
-    <Cabecera />
-  </header>
-  <div class="app-container">
-    <main class="main-content">
+
+  <Cabecera />
+  
+  <div class="min-h-screen flex flex-col bg-gray-900 text-white font-sans">
     
+    
+
+    <main class="flex-grow relative bg-[url('/img/fondo.png')] bg-cover bg-center bg-no-repeat">
+      
       
 
     </main>
 
-    <!-- Footer global -->
     
+
   </div>
-<footer>
-      <Footer /> 
-       </footer>
+
+  <Footer />
+
 </template>
 
 <style>
-/* Layout base */
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content {
-  flex: 1;
-}
+/* Ya no necesitamos CSS aquí, todo está controlado por Tailwind */
 </style>
