@@ -1,40 +1,54 @@
 <template>
-  <footer class="gamefest-footer">
-    <div class="container">
+  <footer class="w-full py-8 px-4 text-white bg-[linear-gradient(90deg,#4b1d3f_0%,#d63384_100%)]">
+    
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
 
-      <!-- Columna 1: Logo y descripción -->
-      <div class="footer-column">
-        <div class="brand">
-          <span class="brand-name">GameFest</span>
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold tracking-wide">GameFest</span>
         </div>
-        <p class="brand-description">
+        <p class="text-sm leading-relaxed text-gray-100 opacity-90">
           Tu portal para descubrir videojuegos, eventos y mucho más.
           Únete a la comunidad de jugadores.
         </p>
       </div>
 
-      <!-- Columna 2: Enlaces -->
-      <div class="footer-column">
-        <h3>Enlaces</h3>
-        <ul class="footer-links">
-          <li><router-link to="/">Inicio</router-link></li>
-          <li><router-link to="/juegos">Juegos</router-link></li>
-          <li><router-link to="/eventos">Eventos</router-link></li>
-          <li><router-link to="/login">Iniciar sesión</router-link></li>
+      <div>
+        <h3 class="text-lg font-bold mb-4 uppercase tracking-wider">Enlaces</h3>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <router-link to="/" class="hover:text-pink-300 transition-colors duration-300">
+              Inicio
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/juegos" class="hover:text-pink-300 transition-colors duration-300">
+              Juegos
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/eventos" class="hover:text-pink-300 transition-colors duration-300">
+              Eventos
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/login" class="hover:text-pink-300 transition-colors duration-300">
+              Iniciar sesión
+            </router-link>
+          </li>
         </ul>
       </div>
 
-      <!-- Columna 3: Redes sociales -->
-      <div class="footer-column">
-        <h3>Síguenos</h3>
-        <div class="social-icons">
-          <a href="#" target="_blank" aria-label="Facebook">
+      <div>
+        <h3 class="text-lg font-bold mb-4 uppercase tracking-wider">Síguenos</h3>
+        <div class="flex gap-4 text-xl">
+          <a href="#" target="_blank" aria-label="Facebook" class="hover:text-pink-300 hover:scale-110 transition-all duration-300">
             <i class="fab fa-facebook-f"></i>
           </a>
-          <a href="#" target="_blank" aria-label="Twitter">
+          <a href="#" target="_blank" aria-label="Twitter" class="hover:text-pink-300 hover:scale-110 transition-all duration-300">
             <i class="fab fa-twitter"></i>
           </a>
-          <a href="#" target="_blank" aria-label="YouTube">
+          <a href="#" target="_blank" aria-label="YouTube" class="hover:text-pink-300 hover:scale-110 transition-all duration-300">
             <i class="fab fa-youtube"></i>
           </a>
         </div>
@@ -42,117 +56,17 @@
 
     </div>
 
-    <div class="footer-bottom">
+    <div class="mt-8 pt-4 border-t border-white/20 text-center text-sm text-gray-200">
       <p>© 2025 GameFest. Todos los derechos reservados.</p>
     </div>
+
   </footer>
 </template>
 
 <script setup>
-// No necesita lógica por ahora
+// Sin lógica necesaria
 </script>
 
 <style scoped>
-.gamefest-footer {
-  background: linear-gradient(90deg, #4b1d3f 0%, #d63384 100%);
-  color: white;
-  padding: 2rem 1rem 1rem 1rem;
-  width: 100%;
-  font-family: Arial, sans-serif;
-}
-
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Columnas */
-.footer-column {
-  flex: 1 1 200px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-.logo-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-}
-
-.brand-name {
-  font-weight: bold;
-  font-size: 1.4rem;
-}
-
-.brand-description {
-  font-size: 0.9rem;
-  line-height: 1.4;
-  margin-top: 0.5rem;
-}
-
-/* Enlaces */
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-links li {
-  margin-bottom: 0.5rem;
-}
-
-.footer-links li a {
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.footer-links li a:hover {
-  color: #ffb8d1;
-}
-
-/* Redes sociales */
-.social-icons {
-  display: flex;
-  gap: 1rem;
-  font-size: 1.2rem;
-}
-
-.social-icons a {
-  color: white;
-  transition: color 0.3s;
-}
-
-.social-icons a:hover {
-  color: #ffb8d1;
-}
-
-/* Footer inferior */
-.footer-bottom {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.8rem;
-  border-top: 1px solid rgba(255,255,255,0.2);
-  padding-top: 1rem;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .footer-column {
-    flex: 1 1 100%;
-  }
-}
+/* Estilos eliminados a favor de Tailwind */
 </style>

@@ -1,94 +1,49 @@
 <template>
-  <footer class="gamefest-footer">
-    <div class="container">
+  <header class="w-full py-4 px-8 text-white bg-[linear-gradient(90deg,#d63384_0%,#4b1d3f_50%,#1a0b2e_100%)] shadow-lg">
+    
+    <div class="container mx-auto grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-0 items-center">
 
-      <!-- Marca -->
-      <router-link to="/" class="brand">
-        <span class="brand-name">GameFest</span>
+      <router-link to="/" class="group flex items-center justify-self-center md:justify-self-start transition-opacity hover:opacity-80">
+        <span class="text-xl font-bold tracking-wide">GameFest</span>
       </router-link>
 
-      <!-- Navegación -->
-      <nav class="footer-nav">
-        <router-link to="/juegos" class="nav-link">Juegos</router-link>
-        <router-link to="/eventos" class="nav-link">Eventos</router-link>
-        <router-link to="/login" class="nav-link highlight">
-          Iniciar sesión
-        </router-link>
+      <nav class="justify-self-center md:justify-self-end">
+        <div class="flex items-center gap-6 font-semibold text-sm sm:text-base">
+          
+          <router-link 
+            to="/juegos" 
+            class="hover:text-pink-300 transition-colors duration-300"
+          >
+            Juegos
+          </router-link>
+
+          <router-link 
+            to="/eventos" 
+            class="hover:text-pink-300 transition-colors duration-300"
+          >
+            Eventos
+          </router-link>
+
+          <router-link 
+            to="/login" 
+            class="bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 hover:text-pink-200 transition-all duration-300"
+          >
+            Iniciar sesión
+          </router-link>
+
+        </div>
       </nav>
 
     </div>
-  </footer>
+  </header>
 </template>
 
 <script setup>
-// No se necesita lógica por ahora
+// Lógica del componente (vacía por ahora)
 </script>
 
 <style scoped>
-.gamefest-footer {
-  background: linear-gradient(90deg, #d63384 0%, #4b1d3f 50%, #1a0b2e 100%);
-  padding: 1rem 2rem;
-  color: white;
-  width: 100%;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Marca */
-.brand {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  transition: opacity 0.3s;
-}
-
-.brand:hover {
-  opacity: 0.8;
-}
-
-.brand-name {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-}
-
-/* Navegación */
-.footer-nav {
-  display: flex;
-  gap: 2rem;
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: color 0.3s;
-}
-
-.nav-link:hover {
-  color: #ffb8d1;
-}
-
-.highlight {
-  opacity: 0.9;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .container {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .footer-nav {
-    gap: 1rem;
-  }
-}
+/* Ya no necesitamos estilos CSS aquí porque todo está controlado por Tailwind.
+   Esto mantiene tu archivo limpio y fácil de mantener.
+*/
 </style>
