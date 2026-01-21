@@ -12,10 +12,9 @@ import Footer from './components/Footer.vue';
     
     
 
-    <main class="flex-grow relative bg-[url('/img/fondo.png')] bg-cover bg-center bg-no-repeat">
+    <main class="grow relative bg-[url('/img/fondo.png')] bg-cover bg-center bg-no-repeat">
       
       
-
     </main>
 
     
