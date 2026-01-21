@@ -1,11 +1,10 @@
 <script setup>
-import Cabecera from '@/components/Cabecera.vue';
-import Footer from '@/components/Footer.vue';
+
   
 </script>
 
 <template>
-  <Cabecera />
+  
 
   <div class="min-h-screen flex flex-col bg-gray-900 text-white font-sans">
     <main class="grow relative bg-[url('/img/fondo.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
@@ -44,5 +43,5 @@ import Footer from '@/components/Footer.vue';
 
   </div>
 
-    <Footer />
+    
 </template>

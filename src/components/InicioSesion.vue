@@ -1,6 +1,6 @@
 <!-- components/InicioSesion.vue -->
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 md:p-8">
+  <div class="min-h-screen bg-linear-to-b from-gray-900 to-black text-white p-4 md:p-8">
     <!-- Contenedor principal -->
     <div class="max-w-6xl mx-auto">
       <!-- Título y filtros -->
