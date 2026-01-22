@@ -1,9 +1,15 @@
 // router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
+//Importar ?¿components corregir?¿
 import InicioSesion from '../components/InicioSesion.vue'
-import JuegosPage from '../components/JuegosPage.vue'
-import EventosPage from '../components/EventosPage.vue'
+//Importar las views
 import HomeView from '@/views/HomeView.vue'
+import JuegosView from '@/views/Juegos.vue'
+import EventosView from '@/views/Eventos.vue'
+
+//?Crear la vista pronto o ya existe¿
+//import LoginView from '@/views/LoginView.vue'
+//import { name } from '@vue/eslint-config-prettier/skip-formatting'
 
 const routes = [
   {
@@ -11,34 +17,34 @@ const routes = [
     name: 'Home',
     component: HomeView
   },
+
   {
     path: '/juegos',
     name: 'Juegos',
-    component: JuegosPage
+    component: JuegosView
   },
+
   {
     path: '/eventos',
     name: 'Eventos',
-    component: EventosPage
+    component: EventosView
   },
-  {
-    path: '/inicio-sesion',
-    name: 'InicioSesion',
-    component: InicioSesion
-  },
+  
   // Redirección para rutas antiguas
   {
     path: '/login',
     redirect: '/inicio-sesion'
   },
+
+  // Redirección por si alguien escribe /inicio-sesion
   {
-    path: '/InicioSesion',
-    redirect: '/inicio-sesion'
+    path: '/inicio-sesion',
+    redirect: '/login'
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL), // Mejor práctica en Vite
   routes
 })
 

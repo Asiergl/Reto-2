@@ -10,8 +10,5 @@
 </script>
 
 <style scoped>
-.eventos {
-  padding: 2rem;
-  min-height: 400px;
-}
+
 </style>
