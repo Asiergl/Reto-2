@@ -1,3 +1,8 @@
+<script setup>
+// Definimos el evento para que App.vue sepa cuándo abrir el modal
+const emit = defineEmits(['abrirModal']);
+</script>
+
 <template>
   <header class="w-full py-4 px-8 text-white bg-[linear-gradient(90deg,#d63384_0%,#4b1d3f_50%,#1a0b2e_100%)] shadow-lg">
     
@@ -24,12 +29,12 @@
             Eventos
           </router-link>
 
-          <router-link 
-            to="/login" 
-            class="bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 hover:text-pink-200 transition-all duration-300"
+          <button 
+            @click="$emit('abrirModal')"
+            class="bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 hover:text-pink-200 transition-all duration-300 cursor-pointer"
           >
             Iniciar sesión
-          </router-link>
+          </button>
 
         </div>
       </nav>
@@ -38,9 +43,7 @@
   </header>
 </template>
 
-<script setup>
-// Lógica del componente (vacía por ahora)
-</script>
+
 
 <style scoped>
 /* Ya no necesitamos estilos CSS aquí porque todo está controlado por Tailwind.
