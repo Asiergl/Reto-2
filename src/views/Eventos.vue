@@ -4,13 +4,11 @@ import { ref, onMounted, watch } from 'vue';
 const eventos = ref([]);
 const paginaActual = ref(1);
 const hayMasDatos = ref(true);
-
 // --- 1. NUEVAS VARIABLES REACTIVAS PARA EL BUSCADOR ---
 const filtroTipo = ref('todos');
 const filtroFecha = ref('');
 const filtroSoloLibres = ref(false);
-
-const API_URL = 'http://localhost/Backend_reto-2'; 
+const API_URL = 'http://localhost/fran_cosas/Backend_reto-2'; 
 
 // --- 2. FUNCIÓN CARGAR EVENTOS (Ahora con filtros) ---
 const cargarEventos = async () => {
