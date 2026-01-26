@@ -84,7 +84,7 @@ const handleSubmit = async () => {
                 <span class="text-xl font-bold">✕</span>
             </button>
 
-            <div class="bg-gradient-to-r from-pink-600 to-purple-600 p-6 text-center">
+            <div class="bg-linear-to-r from-pink-600 to-purple-600 p-6 text-center">
                 <h2 class="text-2xl font-bold text-white tracking-wide">
                     {{ isLoginMode ? 'Bienvenido de nuevo' : 'Únete a GameFest' }}
                 </h2>
