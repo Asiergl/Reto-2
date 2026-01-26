@@ -24,7 +24,9 @@ onMounted(async () => {
 // Función auxiliar para las imágenes (asumiendo que están en public/img o una ruta estática)
 const getImageUrl = (imgName) => {
   // Ajusta esta ruta según donde guardes las imágenes del ZIP
+
   return `src/assets/games/${imgName}`;
+
 };
 </script>
 

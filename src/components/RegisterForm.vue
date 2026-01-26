@@ -41,7 +41,7 @@ const registrar = () => {
     alert(`Registro\nCorreo: ${correo.value}\nContraseña: ${contrasena.value}`)
     correo.value = ''
     contrasena.value = ''
-    emit('success')
+    emit('success') // avisa al modal que se cerró
   } else {
     alert('Completa todos los campos')
   }

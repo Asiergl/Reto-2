@@ -41,7 +41,7 @@ const login = () => {
     alert(`Login\nCorreo: ${correo.value}\nContraseña: ${contrasena.value}`)
     correo.value = ''
     contrasena.value = ''
-    emit('success') // avisa al modal que se cerró
+    emit('success') 
   } else {
     alert('Completa todos los campos')
   }
