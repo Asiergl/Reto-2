@@ -6,7 +6,7 @@ const paginaActual = ref(1);
 // Variable para controlar si hay más datos (simple)
 const hayMasDatos = ref(true);
 
-const API_URL = 'http://localhost/fran_cosas/Backend_reto-2'; 
+const API_URL = 'http://localhost/fran_cosas/BackendReto-2'; 
 
 // Función para cargar eventos según la página
 const cargarEventos = async (pagina) => {

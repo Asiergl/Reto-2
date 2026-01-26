@@ -17,7 +17,7 @@ const form = reactive( {
 });
 
 //URL de tu backend
-const API_URL = 'http://localhost/fran_cosas/Backend_reto-2';
+const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
 
 //Funcion para cambiar de modo
 const toggleMode = () => {
@@ -121,7 +121,7 @@ const handleSubmit = async () => {
               type="email" 
               required
               class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition"
-              placeholder="tu@email.com"
+              placeholder="@email.com"
             >
           </div>
 
@@ -132,7 +132,7 @@ const handleSubmit = async () => {
               type="password" 
               required
               class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition"
-              placeholder="••••••••"
+              
             >
           </div>
 

@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import { RouterView } from 'vue-router' // Importante para ver las páginas
 import Cabecera from '@/components/Cabecera.vue';
 import PiePagina from './components/PiePagina.vue';
