@@ -8,7 +8,7 @@ const hayMasDatos = ref(true);
 const filtroTipo = ref('todos');
 const filtroFecha = ref('');
 const filtroSoloLibres = ref(false);
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2'; 
+const API_URL = 'http://localhost/Backend_reto-2'; 
 
 // --- 2. FUNCIÓN CARGAR EVENTOS (Ahora con filtros) ---
 const cargarEventos = async () => {

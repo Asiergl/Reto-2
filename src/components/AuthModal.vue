@@ -18,7 +18,7 @@ const form = reactive({
 });
 
 // URL de tu backend
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+const API_URL = 'http://localhost/Backend_reto-2';
 
 // Funcion para cambiar de modo
 const toggleMode = () => {
