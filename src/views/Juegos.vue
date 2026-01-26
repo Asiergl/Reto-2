@@ -6,7 +6,7 @@ const juegos = ref([]);
 
 // URL de tu backend (Ajusta esto según donde tengas tu PHP corriendo)
 // Si usas XAMPP suele ser localhost/nombre_carpeta
-const API_URL = 'http://localhost/fran_cosas/Backend_reto-2';
+const API_URL = 'http://localhost/fran_cosas/Backendreto-2';
 
 onMounted(async () => {
   try {

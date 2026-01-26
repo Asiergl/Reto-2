@@ -8,7 +8,7 @@ const hayMasDatos = ref(true);
 const filtroTipo = ref('todos');
 const filtroFecha = ref('');
 const filtroSoloLibres = ref(false);
-const API_URL = 'http://localhost/fran_cosas/Backend_reto-2'; 
+const API_URL = 'http://localhost/fran_cosas/BackendReto-2'; 
 
 // --- 2. FUNCIÓN CARGAR EVENTOS (Ahora con filtros) ---
 const cargarEventos = async () => {
@@ -89,7 +89,7 @@ const limpiarFiltros = () => {
       </div>
 
       <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-10 flex flex-wrap gap-6 items-end">
-        <div class="flex flex-col gap-2 flex-1 min-w-[200px]">
+        <div class="flex flex-col gap-2 flex-1 min-w-50">
           <label class="text-xs font-bold uppercase text-pink-400 tracking-wider">Tipo de Evento</label>
           <select 
             v-model="filtroTipo"
@@ -107,7 +107,7 @@ const limpiarFiltros = () => {
           </select>
         </div>
 
-        <div class="flex flex-col gap-2 flex-1 min-w-[200px]">
+        <div class="flex flex-col gap-2 flex-1 min-w-50">
           <label class="text-xs font-bold uppercase text-pink-400 tracking-wider">Fecha</label>
           <input 
             type="date" 
