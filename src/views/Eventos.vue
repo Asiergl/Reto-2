@@ -13,7 +13,6 @@ const API_URL = 'http://localhost/Backend_reto-2';
 // --- 2. FUNCIÓN CARGAR EVENTOS (Ahora con filtros) ---
 const cargarEventos = async () => {
   try {
-    // Construimos los parámetros para el PHP
     const params = new URLSearchParams({
       page: paginaActual.value,
       tipo: filtroTipo.value,
@@ -21,18 +20,19 @@ const cargarEventos = async () => {
       soloLibres: filtroSoloLibres.value ? '1' : '0'
     });
 
-    const response = await fetch(`${API_URL}/events?${params.toString()}`);
+    // ¡ESTO ES LO MÁS IMPORTANTE PARA LA RECARGA!
+    const response = await fetch(`${API_URL}/events?${params.toString()}`, {
+      method: 'GET',
+      credentials: 'include' // <--- Sin esto, PHP no sabe quién eres al recargar
+    });
+    
     const data = await response.json();
-    
     eventos.value = data;
-    
-    // Si devuelven menos de 9 eventos, no hay más páginas
     hayMasDatos.value = data.length >= 9;
   } catch (error) {
     console.error("Error cargando eventos:", error);
   }
 };
-
 // --- 3. WATCHERS (Para buscar automáticamente al cambiar filtros) ---
 watch([filtroTipo, filtroFecha, filtroSoloLibres], () => {
   paginaActual.value = 1; // Reiniciar a página 1 al filtrar
@@ -73,6 +73,40 @@ const limpiarFiltros = () => {
   filtroTipo.value = 'todos';
   filtroFecha.value = '';
   filtroSoloLibres.value = false;
+};
+const toggleInscripcion = async (evento) => {
+  if (!localStorage.getItem('usuario_gamefest')) {
+    alert("Inicia sesión primero");
+    return;
+  }
+
+  // Decidimos a qué endpoint llamar según si ya está inscrito o no
+  const accion = evento.estaInscrito ? 'unregister' : 'register';
+  
+  try {
+    const response = await fetch(`${API_URL}/events/${accion}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ evento_id: evento.id })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      if (evento.estaInscrito) {
+        evento.plazasLibres++;
+        evento.estaInscrito = false;
+      } else {
+        evento.plazasLibres--;
+        evento.estaInscrito = true;
+      }
+    } else {
+      alert(data.error);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
 };
 </script>
 
@@ -171,9 +205,18 @@ const limpiarFiltros = () => {
                   {{ evento.plazasLibres }}
                 </span>
               </span>
-              <button class="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded text-sm font-bold transition-colors">
-                Inscribirse
-              </button>
+            <button 
+  @click="toggleInscripcion(evento)"
+  :disabled="evento.plazasLibres <= 0 && !evento.estaInscrito"
+  :class="[
+    'px-4 py-2 rounded text-sm font-bold transition-colors',
+    evento.estaInscrito 
+      ? 'bg-red-600 hover:bg-red-700 text-white' 
+      : (evento.plazasLibres > 0 ? 'bg-pink-600 hover:bg-pink-700 text-white' : 'bg-gray-600')
+  ]"
+>
+  {{ evento.estaInscrito ? 'Desapuntarse' : (evento.plazasLibres > 0 ? 'Inscribirse' : 'Agotado') }}
+</button>
             </div>
           </div>
         </div>
