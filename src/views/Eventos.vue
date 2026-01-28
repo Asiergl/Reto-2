@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+// 1. IMPORTAMOS SWEETALERT2 "---npm install sweetalert2---" para que funcione los alert modernos
+import Swal from 'sweetalert2';
 
 const eventos = ref([]);
 const paginaActual = ref(1);
@@ -22,12 +24,13 @@ const cargarEventos = async () => {
     });
 
     const response = await fetch(`${API_URL}/events?${params.toString()}`);
+    if (!response.ok) throw new Error("Error en la petición");
+
     const data = await response.json();
-    
     eventos.value = data;
-    
     // Si devuelven menos de 9 eventos, no hay más páginas
     hayMasDatos.value = data.length >= 9;
+
   } catch (error) {
     console.error("Error cargando eventos:", error);
   }
@@ -74,6 +77,72 @@ const limpiarFiltros = () => {
   filtroFecha.value = '';
   filtroSoloLibres.value = false;
 };
+
+// --- FUNCIÓN DE INSCRIPCIÓN CON SWEETALERT ---
+const toggleInscripcion = async (evento) => {
+  const usuarioLocal = localStorage.getItem('usuario_gamefest');
+  
+  if (!usuarioLocal) {
+    // Alerta de Error (No logueado)
+    Swal.fire({
+      icon: 'warning',
+      title: 'Acceso denegado',
+      text: 'Debes iniciar sesión para apuntarte a los eventos.',
+      background: '#1f2937', // Color gris oscuro (Tailwind gray-800)
+      color: '#fff',         // Texto blanco
+      confirmButtonColor: '#db2777' // Color rosa (pink-600)
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/events/${evento.id}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include' 
+    });
+    
+    const data = await response.json();
+
+    if (response.ok) {
+        // Alerta de Éxito
+        Swal.fire({
+          icon: 'success',
+          title: '¡Inscrito!',
+          text: 'Te has apuntado al evento correctamente.',
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#db2777',
+          timer: 2000, // Se cierra solo a los 2 segundos
+          showConfirmButton: false
+        });
+        
+        // Actualizamos visualmente
+        evento.plazasLibres--; 
+
+    } else {
+        // Alerta de Error (Ya inscrito o sin plazas)
+        Swal.fire({
+          icon: 'error',
+          title: 'Ups...',
+          text: data.error || "Ocurrió un error al inscribirte",
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#db2777'
+        });
+    }
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor',
+      background: '#1f2937',
+      color: '#fff'
+    });
+  }
+};
+
 </script>
 
 <template>
@@ -171,8 +240,13 @@ const limpiarFiltros = () => {
                   {{ evento.plazasLibres }}
                 </span>
               </span>
-              <button class="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded text-sm font-bold transition-colors">
-                Inscribirse
+              <button 
+                @click="toggleInscripcion(evento)"
+                :disabled="evento.plazasLibres === 0"
+                :class="evento.plazasLibres === 0 ? 'bg-gray-600 cursor-not-allowed' : 'bg-pink-600 hover:bg-pink-700'"
+                class="px-4 py-2 rounded text-sm font-bold transition-colors text-white"
+              >
+                {{ evento.plazasLibres === 0 ? 'Agotado' : 'Inscribirse' }}
               </button>
             </div>
           </div>

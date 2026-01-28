@@ -1,3 +1,13 @@
+<script setup>
+// Recibimos el usuario para saber si ocultar el botón
+defineProps({
+  usuario: Object
+});
+
+// Definimos el evento para abrir el modal
+const emit = defineEmits(['abrirModal']);
+</script>
+
 <template>
   <footer class="w-full py-8 px-4 text-white bg-[linear-gradient(90deg,#4b1d3f_0%,#d63384_100%)]">
     
@@ -31,10 +41,13 @@
               Eventos
             </router-link>
           </li>
-          <li>
-            <router-link to="/login" class="hover:text-pink-300 transition-colors duration-300">
+          <li v-if="!usuario">
+            <button 
+              @click="$emit('abrirModal')" 
+              class="hover:text-pink-300 transition-colors duration-300 text-left cursor-pointer"
+            >
               Iniciar sesión
-            </router-link>
+            </button>
           </li>
         </ul>
       </div>
@@ -96,9 +109,7 @@
   </footer>
 </template>
 
-<script setup>
-// Sin lógica necesaria
-</script>
+
 
 <style scoped>
 /* Estilos eliminados a favor de Tailwind */

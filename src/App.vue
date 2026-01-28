@@ -34,7 +34,7 @@ const alIniciarSesion = (datos) => {
 const alCerrarSesion = async () => {
   // Llamamos al backend para destruir sesión PHP
   try {
-    await fetch('http://localhost/fran_cosas/Backend_reto-2/auth/logout', { 
+    await fetch('http://localhost/fran_cosas/BackendReto-2/auth/logout', { 
         method: 'POST' 
     });
   } catch (e) {
@@ -61,7 +61,10 @@ const alCerrarSesion = async () => {
       
       
     </div>
-  <PiePagina />
+  <PiePagina 
+    :usuario="usuario"
+    @abrirModal="mostrarModal = true"
+  />
 
   <AuthModal 
     v-if="mostrarModal" 
