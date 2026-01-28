@@ -10,12 +10,11 @@ const hayMasDatos = ref(true);
 const filtroTipo = ref('todos');
 const filtroFecha = ref('');
 const filtroSoloLibres = ref(false);
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2'; 
+const API_URL = 'http://localhost/Backend_reto-2'; 
 
 // --- 2. FUNCIÓN CARGAR EVENTOS (Ahora con filtros) ---
 const cargarEventos = async () => {
   try {
-    // Construimos los parámetros para el PHP
     const params = new URLSearchParams({
       page: paginaActual.value,
       tipo: filtroTipo.value,
@@ -23,19 +22,20 @@ const cargarEventos = async () => {
       soloLibres: filtroSoloLibres.value ? '1' : '0'
     });
 
-    const response = await fetch(`${API_URL}/events?${params.toString()}`);
-    if (!response.ok) throw new Error("Error en la petición");
-
+    // ¡ESTO ES LO MÁS IMPORTANTE PARA LA RECARGA!
+    const response = await fetch(`${API_URL}/events?${params.toString()}`, {
+      method: 'GET',
+      credentials: 'include' // <--- Sin esto, PHP no sabe quién eres al recargar
+    });
+    
     const data = await response.json();
     eventos.value = data;
-    // Si devuelven menos de 9 eventos, no hay más páginas
     hayMasDatos.value = data.length >= 9;
 
   } catch (error) {
     console.error("Error cargando eventos:", error);
   }
 };
-
 // --- 3. WATCHERS (Para buscar automáticamente al cambiar filtros) ---
 watch([filtroTipo, filtroFecha, filtroSoloLibres], () => {
   paginaActual.value = 1; // Reiniciar a página 1 al filtrar
@@ -77,72 +77,40 @@ const limpiarFiltros = () => {
   filtroFecha.value = '';
   filtroSoloLibres.value = false;
 };
-
-// --- FUNCIÓN DE INSCRIPCIÓN CON SWEETALERT ---
 const toggleInscripcion = async (evento) => {
-  const usuarioLocal = localStorage.getItem('usuario_gamefest');
-  
-  if (!usuarioLocal) {
-    // Alerta de Error (No logueado)
-    Swal.fire({
-      icon: 'warning',
-      title: 'Acceso denegado',
-      text: 'Debes iniciar sesión para apuntarte a los eventos.',
-      background: '#1f2937', // Color gris oscuro (Tailwind gray-800)
-      color: '#fff',         // Texto blanco
-      confirmButtonColor: '#db2777' // Color rosa (pink-600)
-    });
+  if (!localStorage.getItem('usuario_gamefest')) {
+    alert("Inicia sesión primero");
     return;
   }
 
+  // Decidimos a qué endpoint llamar según si ya está inscrito o no
+  const accion = evento.estaInscrito ? 'unregister' : 'register';
+  
   try {
-    const response = await fetch(`${API_URL}/events/${evento.id}/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include' 
+    const response = await fetch(`${API_URL}/events/${accion}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ evento_id: evento.id })
     });
-    
+
     const data = await response.json();
 
-    if (response.ok) {
-        // Alerta de Éxito
-        Swal.fire({
-          icon: 'success',
-          title: '¡Inscrito!',
-          text: 'Te has apuntado al evento correctamente.',
-          background: '#1f2937',
-          color: '#fff',
-          confirmButtonColor: '#db2777',
-          timer: 2000, // Se cierra solo a los 2 segundos
-          showConfirmButton: false
-        });
-        
-        // Actualizamos visualmente
-        evento.plazasLibres--; 
-
+    if (data.success) {
+      if (evento.estaInscrito) {
+        evento.plazasLibres++;
+        evento.estaInscrito = false;
+      } else {
+        evento.plazasLibres--;
+        evento.estaInscrito = true;
+      }
     } else {
-        // Alerta de Error (Ya inscrito o sin plazas)
-        Swal.fire({
-          icon: 'error',
-          title: 'Ups...',
-          text: data.error || "Ocurrió un error al inscribirte",
-          background: '#1f2937',
-          color: '#fff',
-          confirmButtonColor: '#db2777'
-        });
+      alert(data.error);
     }
-
   } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error de conexión',
-      text: 'No se pudo conectar con el servidor',
-      background: '#1f2937',
-      color: '#fff'
-    });
+    console.error("Error:", error);
   }
 };
-
 </script>
 
 <template>
@@ -240,14 +208,18 @@ const toggleInscripcion = async (evento) => {
                   {{ evento.plazasLibres }}
                 </span>
               </span>
-              <button 
-                @click="toggleInscripcion(evento)"
-                :disabled="evento.plazasLibres === 0"
-                :class="evento.plazasLibres === 0 ? 'bg-gray-600 cursor-not-allowed' : 'bg-pink-600 hover:bg-pink-700'"
-                class="px-4 py-2 rounded text-sm font-bold transition-colors text-white"
-              >
-                {{ evento.plazasLibres === 0 ? 'Agotado' : 'Inscribirse' }}
-              </button>
+            <button 
+  @click="toggleInscripcion(evento)"
+  :disabled="evento.plazasLibres <= 0 && !evento.estaInscrito"
+  :class="[
+    'px-4 py-2 rounded text-sm font-bold transition-colors',
+    evento.estaInscrito 
+      ? 'bg-red-600 hover:bg-red-700 text-white' 
+      : (evento.plazasLibres > 0 ? 'bg-pink-600 hover:bg-pink-700 text-white' : 'bg-gray-600')
+  ]"
+>
+  {{ evento.estaInscrito ? 'Desapuntarse' : (evento.plazasLibres > 0 ? 'Inscribirse' : 'Agotado') }}
+</button>
             </div>
           </div>
         </div>
