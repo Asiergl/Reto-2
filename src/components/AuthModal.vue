@@ -1,40 +1,36 @@
 <script setup>
 import { ref, reactive } from 'vue';
 
-// Definir eventos que se envian al padre (App.vue)
-// CORREGIDO: 'login-success' con doble s al final
 const emit = defineEmits(['close', 'login-success']);
 
-// Estado para saber si mostramos registro o login
-const isLoginMode = ref(true); // true = login, false = registro
+const isLoginMode = ref(true);
 const errorMsg = ref('');
 const successMsg = ref('');
+// UX: Estado de carga (Loading)
+const isLoading = ref(false);
 
-// Datos del formulario
 const form = reactive({
     username: '',
     email: '',
     password: ''
 });
 
-// URL de tu backend
 const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
 
-// Funcion para cambiar de modo
 const toggleMode = () => {
     isLoginMode.value = !isLoginMode.value;
     errorMsg.value = '';
     successMsg.value = '';
-    // Limpiar campos
     form.username = '';
     form.email = '';
     form.password = '';
 };
 
-// Funcion principal de envio
 const handleSubmit = async () => {
     errorMsg.value = '';
     successMsg.value = '';
+    // UX: Activamos estado de carga
+    isLoading.value = true;
 
     const endpoint = isLoginMode.value ? '/auth/login' : '/auth/register';
 
@@ -42,7 +38,7 @@ const handleSubmit = async () => {
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include', // Importante para las cookies de sesion
+            credentials: 'include',
             body: JSON.stringify(form)
         });
 
@@ -50,13 +46,10 @@ const handleSubmit = async () => {
 
         if (response.ok) {
             if (isLoginMode.value) {
-                // Login exitoso
-                emit('login-success', data); // CORREGIDO el nombre del evento
-                emit('close'); // cerrar el modal
+                emit('login-success', data);
+                emit('close');
             } else {
-                // Registro exitoso
                 successMsg.value = '¡Cuenta creada! Ahora inicia sesión.';
-                // Cambiamos automáticamente a la vista de login tras registrarse
                 setTimeout(() => {
                     isLoginMode.value = true;
                     successMsg.value = '';
@@ -67,25 +60,29 @@ const handleSubmit = async () => {
         }
     } catch (e) {
         errorMsg.value = 'Error de conexión con el servidor';
-        console.error(e);
+    } finally {
+        // UX: Desactivamos carga siempre (éxito o error)
+        isLoading.value = false;
     }
 };
 </script>
 
 <template>
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    
-        <div class="bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-gray-700 relative overflow-hidden animate-fade-in-up">
-          
-            <button 
-                @click="$emit('close')" 
-                class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-            >
-                <span class="text-xl font-bold">✕</span>
+    <div role="dialog" aria-modal="true" aria-labelledby="modal-title"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity"
+        @click.self="$emit('close')">
+
+        <div
+            class="bg-gray-800 w-full max-w-md rounded-2xl shadow-2xl border border-gray-700 relative overflow-hidden animate-fade-in-up">
+
+            <button @click="$emit('close')"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                aria-label="Cerrar ventana modal">
+                <span class="text-xl font-bold" aria-hidden="true">✕</span>
             </button>
 
             <div class="bg-linear-to-r from-pink-600 to-purple-600 p-6 text-center">
-                <h2 class="text-2xl font-bold text-white tracking-wide">
+                <h2 id="modal-title" class="text-2xl font-bold text-white tracking-wide">
                     {{ isLoginMode ? 'Bienvenido de nuevo' : 'Únete a GameFest' }}
                 </h2>
                 <p class="text-pink-100 text-sm mt-1">
@@ -94,67 +91,60 @@ const handleSubmit = async () => {
             </div>
 
             <div class="p-8">
-                
-                <div v-if="errorMsg" class="mb-4 p-3 bg-red-500/20 border border-red-500 rounded text-red-200 text-sm text-center">
+
+                <div v-if="errorMsg" role="alert"
+                    class="mb-4 p-3 bg-red-500/20 border border-red-500 rounded text-red-200 text-sm text-center">
                     {{ errorMsg }}
                 </div>
-                <div v-if="successMsg" class="mb-4 p-3 bg-green-500/20 border border-green-500 rounded text-green-200 text-sm text-center">
+                <div v-if="successMsg" role="alert"
+                    class="mb-4 p-3 bg-green-500/20 border border-green-500 rounded text-green-200 text-sm text-center">
                     {{ successMsg }}
                 </div>
 
                 <form @submit.prevent="handleSubmit" class="space-y-4">
-                  
+
                     <div v-if="!isLoginMode">
-                        <label class="block text-sm text-gray-400 mb-1">Nombre de usuario</label>
-                        <input 
-                            v-model="form.username" 
-                            type="text" 
-                            required
-                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition"
-                            placeholder="Ej: Gamer123"
-                        >
+                        <label for="username" class="block text-sm text-gray-400 mb-1">Nombre de usuario</label>
+                        <input id="username" v-model="form.username" type="text" required
+                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition disabled:opacity-50"
+                            placeholder="Ej: Gamer123" :disabled="isLoading">
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Correo Electrónico</label>
-                        <input 
-                            v-model="form.email" 
-                            type="email" 
-                            required
-                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition"
-                            placeholder="tu@email.com"
-                        >
+                        <label for="email" class="block text-sm text-gray-400 mb-1">Correo Electrónico</label>
+                        <input id="email" v-model="form.email" type="email" required
+                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition disabled:opacity-50"
+                            placeholder="tu@email.com" :disabled="isLoading">
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Contraseña</label>
-                        <input 
-                            v-model="form.password" 
-                            type="password" 
-                            required
-                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition"
-                            placeholder="••••••••"
-                        >
+                        <label for="password" class="block text-sm text-gray-400 mb-1">Contraseña</label>
+                        <input id="password" v-model="form.password" type="password" required
+                            class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 outline-none transition disabled:opacity-50"
+                            placeholder="••••••••" :disabled="isLoading">
                     </div>
 
-                    <button 
-                        type="submit" 
-                        class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-pink-600/30"
-                    >
-                        {{ isLoginMode ? 'Iniciar Sesión' : 'Registrarse' }}
+                    <button type="submit" :disabled="isLoading"
+                        class="btn-primary w-full text-white font-bold py-2 rounded-lg transition-all transform hover:scale-[1.01] shadow-lg shadow-pink-600/30 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                        <span v-if="isLoading"
+                            class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        <span>{{ isLoading ? 'Procesando...' : (isLoginMode ? 'Iniciar Sesión' : 'Registrarse')
+                            }}</span>
                     </button>
                 </form>
 
                 <div class="mt-6 text-center text-sm text-gray-400">
                     <p v-if="isLoginMode">
-                        ¿Aún no tienes cuenta? 
-                        <button @click="toggleMode" class="text-pink-400 hover:text-pink-300 font-semibold hover:underline">
+                        ¿Aún no tienes cuenta?
+                        <button @click="toggleMode"
+                            class="text-pink-400 hover:text-pink-300 font-semibold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded">
                             Regístrate gratis
                         </button>
                     </p>
                     <p v-else>
-                        ¿Ya tienes cuenta? 
-                        <button @click="toggleMode" class="text-pink-400 hover:text-pink-300 font-semibold hover:underline">
+                        ¿Ya tienes cuenta?
+                        <button @click="toggleMode"
+                            class="text-pink-400 hover:text-pink-300 font-semibold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 rounded">
                             Inicia sesión
                         </button>
                     </p>
@@ -166,12 +156,33 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
+/* CSS MODERNO: Definición de variables locales para este componente */
+.btn-primary {
+    /* Usamos la variable global definida en App.vue */
+    background-color: var(--color-primary, #db2777);
+}
+
+.btn-primary:hover:not(:disabled) {
+    /* CSS MODERNO (REQUISITO EXPLICITO): color-mix
+       Mezclamos el color primario con negro al 10% para oscurecerlo en hover.
+       Esto evita tener que adivinar el código hexadecimal más oscuro.
+    */
+    background-color: color-mix(in srgb, var(--color-primary, #db2777), black 10%);
+}
+
 .animate-fade-in-up {
     animation: fadeInUp 0.3s ease-out;
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>

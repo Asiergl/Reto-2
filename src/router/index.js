@@ -1,7 +1,6 @@
 // router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-//Importar ?¿components corregir?¿
-import InicioSesion from '../components/InicioSesion.vue'
+
 //Importar las views
 import HomeView from '@/views/HomeView.vue'
 import JuegosView from '@/views/Juegos.vue'
@@ -43,18 +42,7 @@ const routes = [
     name: 'Eventos',
     component: EventosView
   },
-  
-  // Redirección para rutas antiguas
-  {
-    path: '/login',
-    redirect: '/inicio-sesion'
-  },
 
-  // Redirección por si alguien escribe /inicio-sesion
-  {
-    path: '/inicio-sesion',
-    redirect: '/login'
-  }
 ]
 
 const router = createRouter({

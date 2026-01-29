@@ -9,36 +9,39 @@ const emit = defineEmits(['abrirModal', 'cerrarSesion']);
 </script>
 
 <template>
-  <header
-    class="w-full py-4 px-8 text-white bg-[linear-gradient(90deg,#d63384_0%,#4b1d3f_50%,#1a0b2e_100%)] shadow-lg sticky top-0 z-40">
+  <header role="banner" class="w-full py-4 px-8 text-white shadow-lg sticky top-0 z-40 header-gradient">
 
     <div class="container mx-auto grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-0 items-center">
 
       <router-link to="/"
-        class="group flex items-center justify-self-center md:justify-self-start transition-opacity hover:opacity-80">
+        class="group flex items-center justify-self-center md:justify-self-start transition-opacity hover:opacity-80 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300"
+        aria-label="Ir a inicio GameFest">
+        <img src="/img/logo.png" alt="Logotipo GameFest" class="mr-8 h-10 w-auto object-contain" />
         <span class="text-xl font-bold tracking-wide">GameFest</span>
       </router-link>
 
-      <nav class="justify-self-center md:justify-self-end">
+      <nav class="justify-self-center md:justify-self-end" aria-label="Menú principal">
         <div class="flex items-center gap-6 font-semibold text-sm sm:text-base">
 
-          <router-link to="/juegos" class=" font-semibold hover:text-pink-300 transition-colors duration-300">
+          <router-link to="/juegos"
+            class="font-semibold hover:text-pink-300 transition-colors duration-300 rounded focus:outline-none focus-visible:text-pink-300 focus-visible:underline">
             Juegos
           </router-link>
 
-          <router-link to="/eventos" class=" font-semibold hover:text-pink-300 transition-colors duration-300">
+          <router-link to="/eventos"
+            class="font-semibold hover:text-pink-300 transition-colors duration-300 rounded focus:outline-none focus-visible:text-pink-300 focus-visible:underline">
             Eventos
           </router-link>
 
           <div v-if="usuario" class="flex items-center gap-4">
 
-            <router-link v-if="usuario && usuario.role === 'ADMIN'" to="/crear-evento"
-              class=" font-semibold hover:text-pink-300 transition-colors border-b-2 border-transparent hover:border-pink-300">
+            <router-link v-if="usuario.role === 'ADMIN'" to="/crear-evento"
+              class="font-semibold hover:text-pink-300 transition-colors border-b-2 border-transparent hover:border-pink-300 rounded focus:outline-none focus-visible:text-pink-300">
               Crear Evento
             </router-link>
 
             <router-link to="/mis-eventos"
-              class=" font-semibold hover:text-pink-300 transition-colors border-b-2 border-transparent hover:border-pink-300">
+              class="font-semibold hover:text-pink-300 transition-colors border-b-2 border-transparent hover:border-pink-300 rounded focus:outline-none focus-visible:text-pink-300">
               Mis Eventos
             </router-link>
 
@@ -48,8 +51,8 @@ const emit = defineEmits(['abrirModal', 'cerrarSesion']);
               </span>
 
               <button @click="$emit('cerrarSesion')"
-                class="ml-2 flex items-center justify-center bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded transition-colors"
-                title="Cerrar sesión">
+                class="ml-2 flex items-center justify-center bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                title="Cerrar sesión" aria-label="Cerrar sesión">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                   stroke="currentColor" class="w-3.5 h-3.5">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -60,7 +63,7 @@ const emit = defineEmits(['abrirModal', 'cerrarSesion']);
           </div>
 
           <button v-else @click="$emit('abrirModal')"
-            class="bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 hover:text-pink-200 transition-all duration-300 cursor-pointer border border-transparent hover:border-pink-300/30 flex items-center gap-2">
+            class="bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 hover:text-pink-200 transition-all duration-300 cursor-pointer border border-transparent hover:border-pink-300/30 flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
               stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round"
@@ -76,4 +79,16 @@ const emit = defineEmits(['abrirModal', 'cerrarSesion']);
   </header>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Definición de variables CSS.
+  Aquí definimos tus colores exactos para usarlos en el gradiente.
+*/
+.header-gradient {
+  --grad-start: #d63384;
+  --grad-mid: #4b1d3f;
+  --grad-end: #1a0b2e;
+
+  /* Aplicamos el gradiente usando las variables */
+  background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-mid) 50%, var(--grad-end) 100%);
+}
+</style>

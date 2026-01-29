@@ -6,11 +6,10 @@ const misEventos = ref([]);
 const cargando = ref(true);
 const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
 
-// Cargar eventos del usuario
 const cargarMisEventos = async () => {
     try {
         const response = await fetch(`${API_URL}/users/me/events`, {
-            credentials: 'include' // Vital para que sepa quién eres
+            credentials: 'include'
         });
 
         if (response.ok) {
@@ -23,9 +22,7 @@ const cargarMisEventos = async () => {
     }
 };
 
-// Función Desapuntarse
 const desapuntarse = async (evento) => {
-    // Confirmación previa
     const result = await Swal.fire({
         title: '¿Estás seguro?',
         text: `Vas a liberar tu plaza en "${evento.titulo}"`,
@@ -43,7 +40,7 @@ const desapuntarse = async (evento) => {
 
     try {
         const response = await fetch(`${API_URL}/events/${evento.id}/signup`, {
-            method: 'DELETE', // Método DELETE para borrar
+            method: 'DELETE',
             credentials: 'include'
         });
 
@@ -57,7 +54,7 @@ const desapuntarse = async (evento) => {
                 timer: 1500,
                 showConfirmButton: false
             });
-            // Recargamos la lista para que desaparezca
+            // Recargamos la lista
             cargarMisEventos();
         } else {
             throw new Error();
@@ -77,62 +74,137 @@ onMounted(() => {
     cargarMisEventos();
 });
 
-const getImageUrl = (imgName) => `/src/assets/events/${imgName}`;
-const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES');
+const getImageUrl = (imgName) => {
+    try {
+        return new URL(`/src/assets/events/${imgName}`, import.meta.url).href;
+    } catch (e) {
+        return '';
+    }
+};
+
+const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 </script>
 
 <template>
-    <main class="grow relative bg-[url('/img/fondoview.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
-        <div class="min-h-screen p-8 text-white">
+    <main
+        class="grow relative bg-[url('/img/fondoview.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center min-h-screen">
+        <div class="absolute inset-0 bg-gray-900/30"></div>
+
+        <div class="relative z-10 w-full min-h-screen p-8 text-white">
             <div class="max-w-5xl mx-auto">
-                <h1 class="text-3xl font-bold text-pink-500 mb-6 border-b border-gray-700 pb-4">
+
+                <h1 class="text-3xl font-bold text-pink-500 mb-6 border-b border-gray-700 pb-4 drop-shadow-md">
                     Mis Inscripciones
                 </h1>
 
-                <div v-if="cargando" class="text-center text-gray-400 py-10">Cargando...</div>
+                <div v-if="cargando" class="flex justify-center items-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+                </div>
 
                 <div v-else-if="misEventos.length === 0"
-                    class="text-center py-20 bg-gray-800 rounded-xl border border-dashed border-gray-700">
-                    <p class="text-xl text-gray-400 mb-4 ml-8 mr-8">No estás apuntado a ningún evento aún.</p>
+                    class="text-center py-20 bg-gray-800/80 backdrop-blur-sm rounded-xl border border-dashed border-gray-600 animate-fade-in-up">
+                    <p class="text-xl text-gray-300 mb-4 ml-8 mr-8">No estás apuntado a ningún evento aún.</p>
                     <router-link to="/eventos"
-                        class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-bold transition">
+                        class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-bold transition shadow-lg hover:shadow-pink-500/20 inline-block focus:outline-none focus:ring-2 focus:ring-white">
                         Ver Eventos Disponibles
                     </router-link>
                 </div>
 
-                <div v-else class="space-y-4">
-                    <div v-for="evento in misEventos" :key="evento.id"
-                        class="bg-gray-800 rounded-lg overflow-hidden flex flex-col md:flex-row shadow-lg border border-gray-700 hover:border-pink-500/50 transition">
+                <div v-else class="space-y-4" aria-live="polite">
 
-                        <div class="md:w-48 h-48 md:h-auto relative">
-                            <img :src="getImageUrl(evento.imagen)" class="w-full h-full object-cover">
+                    <transition-group name="list" tag="div" class="space-y-4">
+                        <div v-for="evento in misEventos" :key="evento.id"
+                            class="bg-gray-800/90 backdrop-blur-md rounded-lg overflow-hidden flex flex-col md:flex-row shadow-lg border border-gray-700 hover:border-pink-500/50 transition-all duration-300 hover:transform hover:translate-x-1">
+
+                            <div class="md:w-48 h-48 md:h-auto relative shrink-0">
+                                <img :src="getImageUrl(evento.imagen)" :alt="'Portada del evento ' + evento.titulo"
+                                    class="w-full h-full object-cover">
+                            </div>
+
+                            <div class="p-6 grow flex flex-col justify-center">
+                                <div class="flex justify-between items-start">
+                                    <h2 class="text-xl font-bold mb-2 text-white">{{ evento.titulo }}</h2>
+                                    <span
+                                        class="bg-pink-900/80 text-pink-200 text-xs px-2 py-1 rounded shadow-sm border border-pink-500/20">{{
+                                        evento.tipo }}</span>
+                                </div>
+
+                                <p class="text-gray-300 text-sm mb-4 line-clamp-2">{{ evento.descripcion }}</p>
+
+                                <div class="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                                    <span><i class="fas fa-calendar mr-1 text-pink-500" aria-hidden="true"></i> {{
+                                        formatearFecha(evento.fecha) }}</span>
+                                    <span><i class="fas fa-clock mr-1 text-pink-500" aria-hidden="true"></i> {{
+                                        evento.hora.substring(0, 5) }}</span>
+                                </div>
+
+                                <div class="mt-auto">
+                                    <button @click="desapuntarse(evento)"
+                                        class="btn-danger-outline px-4 py-2 rounded text-sm font-bold transition-all flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                        aria-label="Cancelar inscripción en este evento">
+                                        <i class="fas fa-trash-alt" aria-hidden="true"></i> Cancelar Inscripción
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="p-6 grow flex flex-col justify-center">
-                            <div class="flex justify-between items-start">
-                                <h2 class="text-xl font-bold mb-2">{{ evento.titulo }}</h2>
-                                <span class="bg-pink-900 text-pink-200 text-xs px-2 py-1 rounded">{{ evento.tipo
-                                    }}</span>
-                            </div>
-
-                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ evento.descripcion }}</p>
-
-                            <div class="flex items-center gap-4 text-sm text-gray-300 mb-4">
-                                <span><i class="fas fa-calendar"></i> {{ formatearFecha(evento.fecha) }}</span>
-                                <span><i class="fas fa-clock"></i> {{ evento.hora.substring(0, 5) }}</span>
-                            </div>
-
-                            <div class="mt-auto">
-                                <button @click="desapuntarse(evento)"
-                                    class="text-red-400 border border-red-400 hover:bg-red-600 hover:text-white px-4 py-2 rounded text-sm font-bold transition-all flex items-center gap-2">
-                                    <i class="fas fa-trash-alt"></i> Cancelar Inscripción
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    </transition-group>
                 </div>
 
             </div>
         </div>
     </main>
 </template>
+
+<style scoped>
+/* CSS MODERNO: Variables locales para el botón de peligro */
+.btn-danger-outline {
+    --color-danger: #f87171;
+    /* red-400 */
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    background-color: transparent;
+}
+
+.btn-danger-outline:hover {
+    background-color: #dc2626;
+    /* red-600 */
+    border-color: #dc2626;
+    color: white;
+}
+
+/* MICROINTERACCIONES (30 pts - Animaciones de lista) */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.list-leave-active {
+    position: absolute;
+    /* Asegura que al irse deje espacio suavemente */
+    width: 100%;
+    /* Mantiene el ancho al salir */
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
