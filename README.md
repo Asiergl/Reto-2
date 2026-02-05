@@ -1,44 +1,80 @@
-# reto2
+[README.md](https://github.com/user-attachments/files/25109879/README.md)
+# 🎮 GameFest - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Plataforma web para la gestión, visualización e inscripción a eventos de videojuegos y eSports.
 
-## Recommended IDE Setup
+## 📋 Descripción del Proyecto
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+En el servidor = http://10.0.56.66/~dw2t_francisco/ la web esta conectada a la base de datos http://10.0.56.66/phpmyadmin/index.php usuario: dw2t_francisco contraseña: 12345
+para realizar pruebas. hay dos usuarios creados uno es admin = administrador@gmail.com y otro es user = manolo@gmail.com, la contraseña es: 12345 en ambos 
 
-## Recommended Browser Setup
+# Este Frontend esta orientado y con las API_URL apuntando al servidor, no a localhost = http://10.0.56.66/~dw2t_francisco/backend 
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Este proyecto es el **Frontend** de la aplicación GameFest, desarrollado con **Vue 3** y **Vite**. Se comunica con un Backend en PHP/MySQL para gestionar usuarios, juegos y eventos.
 
-## Customize configuration
+### Características Principales
+* **Catálogo de Juegos:** Búsqueda filtrada por título, género y plataforma.
+* **Gestión de Eventos:** Visualización de agenda, plazas disponibles y detalles.
+* **Sistema de Usuarios:** Registro e inicio de sesión (Login/Logout).
+* **Inscripciones:** Los usuarios pueden apuntarse y desapuntarse de eventos.
+* **Panel de Administración:** Creación de nuevos eventos con subida de imágenes (Solo Admin).
+* **Diseño Responsivo:** Adaptado a móviles y escritorio con CSS moderno (`color-mix`, variables CSS).
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## 🛠️ Tecnologías
 
-## Project Setup
+* [Vue.js 3](https://vuejs.org/) - Framework JavaScript (Composition API).
+* [Vite](https://vitejs.dev/) - Entorno de desarrollo y empaquetador.
+* [Vue Router](https://router.vuejs.org/) - Enrutamiento SPA (Single Page Application).
+* [SweetAlert2](https://sweetalert2.github.io/) - Alertas modales atractivas.
+* **CSS Moderno** - Uso de `var()` y `color-mix` para temización.
 
-```sh
-npm install
-```
+## 🚀 Instalación y Configuración
 
-### Compile and Hot-Reload for Development
+### Prerrequisitos
+* Node.js (v16 o superior)
+* NPM
 
-```sh
-npm run dev
-```
+### Pasos para desarrollo local
 
-### Compile and Minify for Production
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone <URL_DEL_REPOSITORIO>
+    cd FrontendReto-2
+    ```
 
-```sh
-npm run build
-```
+2.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
 
-### Lint with [ESLint](https://eslint.org/)
+3.  **Configurar la API (Importante):**
+    Si estás trabajando en local con Docker o XAMPP, ve a los archivos `.vue` (como `App.vue`, `Eventos.vue`, etc.) y asegúrate de que la variable `API_URL` apunta a tu local:
+    ```javascript
+    // Para Docker Local
+    const API_URL = 'http://localhost:8080/backend';
+    ```
 
-```sh
-npm run lint
-```
+4.  **Ejecutar servidor de desarrollo:**
+    ```bash
+    npm run dev
+    ```
+
+## 📦 Despliegue en Servidor (Nemesio)
+
+Para subir la aplicación al servidor de producción (`/~dw2t_francisco/`), sigue estos pasos estrictos:
+
+1.  **Configurar Rutas de Producción:**
+    * Asegúrate de que en todos los archivos `.vue`, `API_URL` apunta al servidor real:
+        `const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';`
+    * Verifica que `vite.config.js` tiene `base: '/~dw2t_francisco/'`.
+    * Verifica que `router/index.js` tiene `history: createWebHistory('/~dw2t_francisco/')`.
+
+2.  **Compilar el proyecto:**
+    Genera la carpeta `dist` optimizada:
+    ```bash
+    npm run build
+    ```
+
+3.  **Subir archivos (FTP/FileZilla):**
+    * Sube **todo el contenido** de la carpeta `dist` generada a la carpeta `public_html` del servidor.
+    * **IMPORTANTE:** Asegúrate de subir también el archivo `.htaccess` que está en la carpeta `public` para evitar errores 404 al recargar la página.
