@@ -28,15 +28,22 @@ const alIniciarSesion = (datos) => {
 
 const alCerrarSesion = async () => {
   try {
-    await fetch('http://localhost/fran_cosas/BackendReto-2/auth/logout', {
-      method: 'POST'
+
+    await fetch('http://10.0.56.66/~dw2t_francisco/backend/auth/logout', {
+      method: 'POST',
+      credentials: 'include' // <--- Sin esto, PHP no sabe qué sesión borrar
     });
   } catch (e) {
-    console.error("Error al cerrar sesión en servidor");
+    console.error("Error al cerrar sesión en servidor", e);
   }
 
+  // Limpieza local (Visual)
   usuario.value = null;
   localStorage.removeItem('usuario_gamefest');
+
+  // CORRECCIÓN 3: Forzar recarga de página
+  // Esto limpia cualquier dato que haya quedado en memoria de Vue
+  window.location.href = '/~dw2t_francisco/';
 };
 </script>
 
@@ -61,9 +68,7 @@ const alCerrarSesion = async () => {
 </template>
 
 <style>
-/* CSS MODERNO: 
-  Definición de variables CSS (Custom Properties) 
-*/
+
 :root {
   /* Colores base extraídos de Tailwind (Pink-600 y Gray-900) */
   --color-primary: #db2777;
@@ -85,9 +90,7 @@ body {
   background-color: var(--color-bg);
 }
 
-/* CSS MODERNO: Uso de color-mix 
-  Crea un color de selección semitransparente basado en el primario
-*/
+
 ::selection {
   background-color: color-mix(in srgb, var(--color-primary), transparent 20%);
   color: white;

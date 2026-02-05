@@ -15,7 +15,7 @@ const form = reactive({
     password: ''
 });
 
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';
 
 const toggleMode = () => {
     isLoginMode.value = !isLoginMode.value;
@@ -156,14 +156,14 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
-/* CSS MODERNO: Definición de variables locales para este componente */
+
 .btn-primary {
-    /* Usamos la variable global definida en App.vue */
+    /* Usamos la variable global */
     background-color: var(--color-primary, #db2777);
 }
 
 .btn-primary:hover:not(:disabled) {
-    /* CSS MODERNO (REQUISITO EXPLICITO): color-mix
+    /*
        Mezclamos el color primario con negro al 10% para oscurecerlo en hover.
        Esto evita tener que adivinar el código hexadecimal más oscuro.
     */

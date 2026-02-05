@@ -1,5 +1,5 @@
 <script setup>
-// No necesitamos lógica compleja aquí, es una vista de presentación.
+// No necesitamos
 </script>
 
 <template>
@@ -14,7 +14,7 @@
     <div class="relative z-20 px-4 w-full flex justify-center">
 
       <div
-        class="bg-indigo-950/80 backdrop-blur-md p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-white/10 animate-fade-in-up">
+        class="backdrop-blur-md p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-white/10 animate-fade-in-up">
 
         <h1
           class="text-4xl md:text-5xl font-bold mb-6 text-transparent bg-clip-text bg-linear-to-r from-pink-400 to-purple-400 drop-shadow-sm">
@@ -45,28 +45,28 @@
 </template>
 
 <style scoped>
-/* CSS MODERNO
-  1. Definición de variables CSS locales.
-  2. Uso de color-mix para generar estados hover dinámicos.
+/*
+   Definición de variables CSS locales.
+   Uso de color-mix para generar estados hover dinámicos.
 */
 .btn-modern {
-  /* Definimos variables por defecto */
+  
   --btn-color: #6366f1;
 }
 
 .btn-purple {
   --btn-color: #9333ea;
-  /* Purple-600 */
+  
   background-color: var(--btn-color);
 }
 
 .btn-pink {
   --btn-color: #db2777;
-  /* Pink-600 */
+  
   background-color: var(--btn-color);
 }
 
-/* REQUISITO: color-mix 
+/* 
    Al hacer hover, mezclamos el color base con blanco (20%) para aclararlo,
    o con negro para oscurecerlo. Aquí lo aclaramos para efecto "brillo".
 */
@@ -75,7 +75,7 @@
   box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--btn-color), transparent 50%);
 }
 
-/* MICROINTERACCIONES (30 pts - Parte visual) */
+/* MICROINTERACCIONES */
 .animate-fade-in-up {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;

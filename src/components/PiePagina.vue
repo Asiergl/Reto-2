@@ -98,8 +98,8 @@ const emit = defineEmits(['abrirModal']);
 </template>
 
 <style scoped>
-/* REQUISITO: Definición de variables CSS y uso de var().
-  Esto cumple el criterio "Variables claras y usadas".
+/* 
+  Variables.
 */
 .footer-gradient {
   --color-footer-start: #4b1d3f;

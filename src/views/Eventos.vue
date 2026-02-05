@@ -5,21 +5,20 @@ import Swal from 'sweetalert2';
 const eventos = ref([]);
 const paginaActual = ref(1);
 const hayMasDatos = ref(true);
-const cargando = ref(false); // UX: Estado de carga
+const cargando = ref(false);
 
-// Variable para el Modal de Detalle
 const eventoSeleccionado = ref(null);
 
-// Filtros
 const filtroTipo = ref('todos');
 const filtroFecha = ref('');
 const filtroSoloLibres = ref(false);
 
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+// Asegura de que esta URL coincide con tu backend (XAMPP o Docker)
+const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';
 
 // --- FUNCIÓN CARGAR EVENTOS ---
 const cargarEventos = async () => {
-  cargando.value = true; // Empieza carga
+  cargando.value = true;
   try {
     const params = new URLSearchParams({
       page: paginaActual.value,
@@ -38,11 +37,10 @@ const cargarEventos = async () => {
   } catch (error) {
     console.error("Error cargando eventos:", error);
   } finally {
-    cargando.value = false; // Termina carga
+    cargando.value = false;
   }
 };
 
-// --- WATCHERS ---
 watch([filtroTipo, filtroFecha, filtroSoloLibres], () => {
   paginaActual.value = 1;
   cargarEventos();
@@ -52,7 +50,6 @@ onMounted(() => {
   cargarEventos();
 });
 
-// --- PAGINACIÓN ---
 const siguientePagina = () => {
   if (hayMasDatos.value) {
     paginaActual.value++;
@@ -69,13 +66,22 @@ const anteriorPagina = () => {
   }
 };
 
-// --- HELPERS ---
 const getImageUrl = (imgName) => {
-  try {
-    return new URL(`/src/assets/events/${imgName}`, import.meta.url).href;
-  } catch (e) {
-    return '';
+  // 1. Si es null o vacío, devolvemos la default del servidor
+  if (!imgName) return `${API_URL}/img/default.png`;
+
+  // 2. Si ya es una URL completa (http...), la respetamos
+  if (imgName.startsWith('http')) return imgName;
+
+  // A) Si el nombre TIENE extensión (ej: "foto.jpg"), lo pedimos tal cual
+  if (imgName.includes('.')) {
+    return `${API_URL}/img/${imgName}`;
   }
+
+  // B) Si el nombre NO TIENE extensión (ej: "evento1" antiguo),
+  // asumimos que es .png o .jpg. Probemos con .png por defecto (o .jpg si usabas más jpg).
+  // Esto arregla las imágenes viejas de la base de datos.
+  return `${API_URL}/img/${imgName}.png`;
 };
 
 const formatearFecha = (fechaStr) => {
@@ -89,30 +95,28 @@ const limpiarFiltros = () => {
   filtroSoloLibres.value = false;
 };
 
-// --- ABRIR MODAL ---
 const abrirModal = (evento) => {
   eventoSeleccionado.value = evento;
 };
 
 // --- INSCRIPCIÓN ---
 const toggleInscripcion = async (evento) => {
-  const usuarioLocal = localStorage.getItem('usuario_gamefest');
+  // Ya no usamos localStorage para saber si está logueado, sino la cookie de sesión.
+  // Pero para comprobación rápida en frontend, podemos mirar si el usuario tiene datos en el store o localStorage.
+  // Si tu login guarda algo en localStorage, esto vale. Si no, quítalo.
 
+  /* const usuarioLocal = localStorage.getItem('usuario_gamefest');
   if (!usuarioLocal) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Acceso denegado',
-      text: 'Debes iniciar sesión para apuntarte a los eventos.',
-      background: '#1f2937', color: '#fff', confirmButtonColor: '#db2777'
-    });
+    Swal.fire({ icon: 'warning', title: 'Acceso denegado', text: 'Debes iniciar sesión...', background: '#1f2937', color: '#fff' });
     return;
-  }
+  } 
+  */
 
   try {
     const response = await fetch(`${API_URL}/events/${evento.id}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
+      credentials: 'include' // IMPORTANTE: Esto envía la cookie de sesión PHP
     });
 
     const data = await response.json();
@@ -125,16 +129,24 @@ const toggleInscripcion = async (evento) => {
         background: '#1f2937', color: '#fff', confirmButtonColor: '#db2777',
         timer: 2000, showConfirmButton: false
       });
-
       evento.plazasLibres--;
-
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ups...',
-        text: data.error || "Ocurrió un error al inscribirte",
-        background: '#1f2937', color: '#fff', confirmButtonColor: '#db2777'
-      });
+      // Si el error es 401, significa que no está logueado
+      if (response.status === 401) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Inicia sesión',
+          text: 'Debes registrate para apuntarte.',
+          background: '#1f2937', color: '#fff', confirmButtonColor: '#db2777'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Ups...',
+          text: data.error || "Ocurrió un error al inscribirte",
+          background: '#1f2937', color: '#fff', confirmButtonColor: '#db2777'
+        });
+      }
     }
 
   } catch (error) {
@@ -211,6 +223,7 @@ const toggleInscripcion = async (evento) => {
             class="bg-gray-800/95 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-pink-500 hover:-translate-y-1 transition-all duration-300 flex flex-col group">
             <div class="h-48 overflow-hidden relative cursor-pointer" @click="abrirModal(evento)">
               <img :src="getImageUrl(evento.imagen)" :alt="'Portada de ' + evento.titulo"
+                @error="$event.target.src = `${API_URL}/img/default.png`"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
               <div
                 class="absolute top-2 right-2 bg-black/70 px-3 py-1 rounded-full text-sm font-bold text-pink-400 shadow-sm">
@@ -301,7 +314,7 @@ const toggleInscripcion = async (evento) => {
 
           <div class="relative h-64 md:h-72">
             <img :src="getImageUrl(eventoSeleccionado.imagen)" :alt="'Imagen de cabecera: ' + eventoSeleccionado.titulo"
-              class="w-full h-full object-cover">
+              @error="$event.target.src = `${API_URL}/img/default.png`" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-linear-to-t from-gray-900 to-transparent"></div>
             <div class="absolute bottom-4 left-6 right-6">
               <span class="inline-block bg-pink-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 shadow-sm">{{
@@ -349,6 +362,4 @@ const toggleInscripcion = async (evento) => {
   </main>
 </template>
 
-<style scoped>
-/* Estilos extra si fuera necesario, pero cubrimos todo con Tailwind y variables inline */
-</style>
+<style scoped></style>

@@ -5,11 +5,11 @@ const juegos = ref([]);
 const juegoSeleccionado = ref(null);
 const cargandoLista = ref(false);
 
-const filtroTitulo = ref('');
-const filtroGenero = ref('');
-const filtroPlataforma = ref('');
+// CAMBIO: Ahora solo tenemos una variable reactiva
+const busquedaGlobal = ref('');
 
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+// Si estás en Docker o Servidor, asegúrate de que esta URL es correcta
+const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';
 
 const getImageUrl = (imgName) => {
   try {
@@ -22,10 +22,9 @@ const getImageUrl = (imgName) => {
 const cargarJuegos = async () => {
   cargandoLista.value = true;
   try {
+    // CAMBIO: Enviamos solo el parámetro 'q'
     const params = new URLSearchParams({
-      s: filtroTitulo.value,
-      g: filtroGenero.value,
-      p: filtroPlataforma.value
+      q: busquedaGlobal.value
     });
 
     const response = await fetch(`${API_URL}/games?${params.toString()}`);
@@ -41,7 +40,8 @@ const cargarJuegos = async () => {
 
 onMounted(() => cargarJuegos());
 
-watch([filtroTitulo, filtroGenero, filtroPlataforma], () => {
+// CAMBIO: Vigilamos solo la variable de búsqueda
+watch(busquedaGlobal, () => {
   cargarJuegos();
 });
 
@@ -55,49 +55,32 @@ const verDetalles = (id) => {
 
 <template>
   <main
-    class="grow relative bg-[url('/img/fondoview.png')] bg-cover bg-center bg-no-repeat flex items-center justify-center min-h-screen"
+    class="grow relative bg-[url('/img/fondoview.png')] bg-cover bg-center bg-no-repeat bg-fixed flex items-start justify-center min-h-screen pt-10"
     aria-labelledby="games-catalog-title">
     <div class="absolute inset-0 bg-gray-900/40"></div>
 
     <div class="relative z-10 w-full text-white px-4 py-8">
       <div class="max-w-7xl mx-auto">
 
-        <h1 id="games-catalog-title" class="text-4xl font-bold mb-6 text-pink-500 drop-shadow-md">
+        <h1 id="games-catalog-title" class="text-4xl font-bold mb-6 text-pink-500 drop-shadow-md text-center">
           Catálogo de Juegos
         </h1>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-gray-800/80 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-700">
-
-          <div>
-            <label for="filtro-titulo" class="sr-only">Buscar por título</label>
-            <input id="filtro-titulo" v-model="filtroTitulo" type="text" placeholder="Buscar por título..."
-              class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition-shadow">
-          </div>
-
-          <div>
-            <label for="filtro-genero" class="sr-only">Filtrar por género</label>
-            <select id="filtro-genero" v-model="filtroGenero"
-              class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 cursor-pointer">
-              <option value="">Cualquier Género</option>
-              <option value="RPG">RPG</option>
-              <option value="Acción">Acción</option>
-              <option value="Shooter">Shooter</option>
-              <option value="Sandbox">Sandbox</option>
-              <option value="Battle Royale">Battle Royale</option>
-              <option value="MOBA">MOBA</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="filtro-plataforma" class="sr-only">Filtrar por plataforma</label>
-            <select id="filtro-plataforma" v-model="filtroPlataforma"
-              class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 cursor-pointer">
-              <option value="">Cualquier Plataforma</option>
-              <option value="PC">PC</option>
-              <option value="Consola">Consola</option>
-              <option value="Móviles">Móviles</option>
-            </select>
+        <div class="max-w-2xl mx-auto mb-10">
+          <label for="buscador-global" class="sr-only">Buscar juegos</label>
+          <!--En php usamon (trim) evitar los espacios, se usa 'COLLATE utf8mb4_unicode_ci' para evitar acentos y Mayus en funciones-->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input id="buscador-global" v-model="busquedaGlobal" type="text"
+              placeholder="Escribe un título, género o plataforma"
+              class="w-full pl-10 pr-4 py-4 rounded-full bg-gray-800/90 backdrop-blur-md border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent shadow-xl transition-all text-lg">
           </div>
         </div>
 
@@ -139,10 +122,11 @@ const verDetalles = (id) => {
 
         <div v-if="juegos.length === 0 && !cargandoLista"
           class="text-center py-20 bg-gray-800/80 rounded-xl border border-dashed border-gray-600">
-          <p class="text-gray-300 text-xl">No se encontraron juegos con esos filtros.</p>
-          <button @click="filtroTitulo = ''; filtroGenero = ''; filtroPlataforma = ''"
-            class="mt-4 text-pink-400 hover:text-pink-300 underline font-semibold focus:outline-none focus:ring-2 focus:ring-pink-500 rounded px-2">Limpiar
-            búsqueda</button>
+          <p class="text-gray-300 text-xl">No se encontraron juegos que coincidan.</p>
+          <button @click="busquedaGlobal = ''"
+            class="mt-4 text-pink-400 hover:text-pink-300 underline font-semibold focus:outline-none focus:ring-2 focus:ring-pink-500 rounded px-2">
+            Ver todos los juegos
+          </button>
         </div>
       </div>
 

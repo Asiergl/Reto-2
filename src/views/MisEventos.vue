@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 
 const misEventos = ref([]);
 const cargando = ref(true);
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';
 
 const cargarMisEventos = async () => {
     try {
@@ -39,10 +39,13 @@ const desapuntarse = async (evento) => {
     if (!result.isConfirmed) return;
 
     try {
-        const response = await fetch(`${API_URL}/events/${evento.id}/signup`, {
-            method: 'DELETE',
+        const response = await fetch(`${API_URL}/events/${evento.id}/signup?action=delete`, {
+            method: 'POST',
             credentials: 'include'
         });
+
+        // Intentamos leer la respuesta JSON del servidor
+        const data = await response.json().catch(() => null);
 
         if (response.ok) {
             Swal.fire({
@@ -54,16 +57,19 @@ const desapuntarse = async (evento) => {
                 timer: 1500,
                 showConfirmButton: false
             });
-            // Recargamos la lista
             cargarMisEventos();
         } else {
-            throw new Error();
+            // Si el servidor envía un error específico, lo usamos. Si no, uno genérico.
+            const mensajeError = data?.error || 'No se pudo completar la acción';
+            throw new Error(mensajeError);
         }
     } catch (e) {
+        console.error("Error al desapuntarse:", e);
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo cancelar la inscripción',
+            // Aquí mostramos el mensaje real del servidor
+            text: e.message,
             background: '#1f2937',
             color: '#fff'
         });
@@ -74,12 +80,21 @@ onMounted(() => {
     cargarMisEventos();
 });
 
+// --- Usamos la lógica del servidor ---
 const getImageUrl = (imgName) => {
-    try {
-        return new URL(`/src/assets/events/${imgName}`, import.meta.url).href;
-    } catch (e) {
-        return '';
+    // 1. Si no hay imagen, usamos la default del backend
+    if (!imgName) return `${API_URL}/img/default.png`;
+
+    // 2. Si es URL externa, la dejamos tal cual
+    if (imgName.startsWith('http')) return imgName;
+
+    // 3. Si tiene extensión (ej: foto.jpg), buscamos en backend/img
+    if (imgName.includes('.')) {
+        return `${API_URL}/img/${imgName}`;
     }
+
+    // 4. Si es un nombre antiguo sin extensión, le añadimos .png y buscamos en backend
+    return `${API_URL}/img/${imgName}.png`;
 };
 
 const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -126,7 +141,7 @@ const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { 
                                     <h2 class="text-xl font-bold mb-2 text-white">{{ evento.titulo }}</h2>
                                     <span
                                         class="bg-pink-900/80 text-pink-200 text-xs px-2 py-1 rounded shadow-sm border border-pink-500/20">{{
-                                        evento.tipo }}</span>
+                                            evento.tipo }}</span>
                                 </div>
 
                                 <p class="text-gray-300 text-sm mb-4 line-clamp-2">{{ evento.descripcion }}</p>
@@ -156,10 +171,9 @@ const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { 
 </template>
 
 <style scoped>
-/* CSS MODERNO: Variables locales para el botón de peligro */
+/* Variables locales para el botón de peligro */
 .btn-danger-outline {
-    --color-danger: #f87171;
-    /* red-400 */
+    --color-danger: #f87171; 
     color: var(--color-danger);
     border: 1px solid var(--color-danger);
     background-color: transparent;
@@ -167,12 +181,11 @@ const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { 
 
 .btn-danger-outline:hover {
     background-color: #dc2626;
-    /* red-600 */
     border-color: #dc2626;
     color: white;
 }
 
-/* MICROINTERACCIONES (30 pts - Animaciones de lista) */
+/* MICROINTERACCIONES */
 .list-move,
 .list-enter-active,
 .list-leave-active {

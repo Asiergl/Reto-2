@@ -5,13 +5,15 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
-
 // https://vite.dev/config/
 export default defineConfig({
+  // ESTA ES LA QUE FALTABA PARA EL SERVIDOR:
+  base: '/~dw2t_francisco/',
+
   plugins: [
     vue(),
     vueDevTools(),
-    tailwindcss(),
+    tailwindcss(), // Mantenemos esto para que cargue los estilos
   ],
   resolve: {
     alias: {

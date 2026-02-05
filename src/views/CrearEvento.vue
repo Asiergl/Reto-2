@@ -4,10 +4,13 @@ import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const API_URL = 'http://localhost/fran_cosas/BackendReto-2';
+const API_URL = 'http://10.0.56.66/~dw2t_francisco/backend';
 
 // UX: Estado de carga
 const cargando = ref(false);
+
+// Variable para almacenar el archivo seleccionado
+const archivoSeleccionado = ref(null);
 
 const form = reactive({
   titulo: '',
@@ -15,9 +18,13 @@ const form = reactive({
   fecha: '',
   hora: '',
   plazasLibres: 10,
-  imagen: '',
   descripcion: ''
 });
+
+// Funcion que detecta cuando el usuario elige un archivo
+const procesarArchivo = (event) => {
+  archivoSeleccionado.value = event.target.files[0];
+};
 
 const crearEvento = async () => {
   // Validación básica
@@ -26,15 +33,29 @@ const crearEvento = async () => {
     return;
   }
 
-  // UX: Activar estado de carga
   cargando.value = true;
 
   try {
+    // CAMBIO IMPORTANTE: Usamos FormData para enviar archivos
+    const formData = new FormData();
+    formData.append('titulo', form.titulo);
+    formData.append('tipo', form.tipo);
+    formData.append('fecha', form.fecha);
+    formData.append('hora', form.hora);
+    formData.append('plazasLibres', form.plazasLibres);
+    formData.append('descripcion', form.descripcion);
+
+    // Solo añadimos la imagen si el usuario seleccionó una
+    if (archivoSeleccionado.value) {
+      formData.append('imagen', archivoSeleccionado.value);
+    }
+
     const response = await fetch(`${API_URL}/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // NOTA: Al usar FormData, NO se pone el header 'Content-Type': 'application/json'
+      // El navegador lo pone automáticamente como 'multipart/form-data'
       credentials: 'include',
-      body: JSON.stringify(form)
+      body: formData
     });
 
     const data = await response.json();
@@ -43,7 +64,7 @@ const crearEvento = async () => {
       await Swal.fire({
         icon: 'success',
         title: 'Evento Creado',
-        text: 'El evento se ha publicado correctamente',
+        text: 'Imagen subida y evento publicado correctamente',
         background: '#1f2937',
         color: '#fff',
         confirmButtonColor: '#db2777'
@@ -53,9 +74,9 @@ const crearEvento = async () => {
       Swal.fire('Error', data.error || 'No se pudo crear el evento', 'error');
     }
   } catch (error) {
+    console.error(error);
     Swal.fire('Error', 'Fallo de conexión', 'error');
   } finally {
-    // UX: Desactivar carga siempre
     cargando.value = false;
   }
 };
@@ -118,11 +139,10 @@ const crearEvento = async () => {
           </div>
 
           <div>
-            <label for="imagen" class="block text-gray-300 mb-2 font-medium">Nombre de Imagen</label>
-            <input id="imagen" v-model="form.imagen" type="text" placeholder="nombre_archivo.jpg"
-              class="w-full bg-gray-900/50 border border-gray-600 rounded-lg p-3 focus:border-pink-500 focus:ring-1 focus:ring-pink-500 outline-none transition-all">
-            <p class="text-xs text-gray-500 mt-1 italic">* La imagen debe estar en la carpeta /assets/events/ por
-              defecto</p>
+            <label for="imagen" class="block text-gray-300 mb-2 font-medium">Imagen del Evento</label>
+            <input id="imagen" type="file" accept="image/*" @change="procesarArchivo"
+              class="w-full bg-gray-900/50 border border-gray-600 rounded-lg p-3 focus:border-pink-500 focus:ring-1 focus:ring-pink-500 outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-700">
+            <p class="text-xs text-gray-500 mt-1 italic">* Se aceptan JPG, PNG, WEBP. Máx 2MB recomendado.</p>
           </div>
 
           <div>
@@ -146,12 +166,10 @@ const crearEvento = async () => {
 </template>
 
 <style scoped>
-/* REQUISITO: Variables CSS y color-mix */
+/* Variables CSS y color-mix */
 .form-modern {
   --color-input-border: #4b5563;
-  /* gray-600 */
   --color-focus: #db2777;
-  /* pink-600 */
 }
 
 .btn-submit {
@@ -160,7 +178,6 @@ const crearEvento = async () => {
 }
 
 .btn-submit:hover:not(:disabled) {
-  /* Oscurecemos el botón al hacer hover usando color-mix */
   background-color: color-mix(in srgb, var(--btn-bg), black 10%);
 }
 
